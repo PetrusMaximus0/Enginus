@@ -17,15 +17,15 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC 
     $<INSTALL_INTERFACE:Include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
-
+    SDL3::SDL3
 PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME}
  PUBLIC
+    SDL3::SDL3
 
  PRIVATE    
-    SDL3::SDL3
 )
 
 ## Post Build Commands
