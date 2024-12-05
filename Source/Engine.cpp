@@ -1,40 +1,72 @@
 #include <filesystem>
-#include <fstream>
-#include <Engine/Engine.h> 
-#include <iostream>
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
-#include <string>
+#include <Engine/Engine.h>
 
-void Engine::PrintHello()
-{
-    //
-    std::cout << "Hello from the Engine!\n";
-
-    //
-    std::ifstream engine_config("./Engine/Config/config.txt");
-    if (engine_config.is_open())
-    {
-        std::cout << engine_config.rdbuf() << "\n"; 
-    }else
-    {
-        std::cout << "Current working directory: " << std::filesystem::current_path() << std::endl;
-        std::cout << "Could not open the engine config file.\n";
+/** Starts up SDL and creates a window */
+bool Engine::init(){ 
+    // Initialize SDL VIDEO
+    if (!SDL_Init(SDL_INIT_VIDEO)){
+        SDL_Log("SDL Could not initialize! SDL error: %s\n", SDL_GetError());
+        return false;
     }
 
-    //Initialize SDL window and renderer
-    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
-        std::cout << "Subsystems Initialized... " << std::endl;
-        auto Window = SDL_CreateWindow("SDL TEST", 0, 0, 400, 400, false);
+    Window = SDL_CreateWindow("SDL3 Tutorial: Hello SDL3", ScreenWidth, ScreenHeight, 0);
 
-        if (Window) {
-            std::cout << "Window Created..." << std::endl;
-            auto Renderer = SDL_CreateRenderer(Window, NULL);
+    if (Window == nullptr){
+        SDL_Log("Window could not be created! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }
+    
+    ScreenSurface = SDL_GetWindowSurface(Window);
+    
+    return true;
+}
 
-            if (Renderer) {
-                std::cout << "Renderer Created" << std::endl;
-                SDL_SetRenderDrawColor(Renderer, 255, 255, 255, 255);
-            }
+/** Loads media */
+bool Engine::loadMedia()
+{
+    return false;
+}
+
+/** Frees media and shuts down SDL*/
+void Engine::close()
+{
+    //Clean up surface
+    //SDL_DestroySurface( HelloWorld );
+    //HelloWorld = nullptr;
+    
+    //Destroy window
+    SDL_DestroyWindow( Window );
+    Window = nullptr;
+    ScreenSurface = nullptr;
+
+    //Quit SDL subsystems
+    SDL_Quit();
+}
+
+bool Engine::tick()
+{
+    //The event data
+    SDL_Event e;
+    SDL_zero( e );
+    
+    //Get event data
+    while( SDL_PollEvent( &e ) )
+    {
+        //If event is quit type
+        if( e.type == SDL_EVENT_QUIT )
+        {
+            //End the main loop
+           return true;
         }
     }
+    //Fill the surface white
+    SDL_FillSurfaceRect( ScreenSurface, nullptr, SDL_MapSurfaceRGB( ScreenSurface, 0xFF, 0xFF, 0xFF ) );
+            
+    //Render image on screen
+    SDL_BlitSurface( HelloWorld, nullptr, ScreenSurface, nullptr );
+
+    //Update the surface
+    SDL_UpdateWindowSurface( Window );
+
+    return false;
 }
