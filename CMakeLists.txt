@@ -17,21 +17,22 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC 
     $<INSTALL_INTERFACE:Include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
-    SDL3::SDL3
 PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME}
  PUBLIC
     SDL3::SDL3
-
  PRIVATE    
 )
 
 ## Post Build Commands
 add_custom_command(TARGET Engine POST_BUILD
- COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:MyApp>/Engine/Config"
- COMMAND ${CMAKE_COMMAND} -E copy_directory
- "${CMAKE_CURRENT_SOURCE_DIR}/Config"
- "$<TARGET_FILE_DIR:MyApp>/Engine/Config"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/Engine/Config"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+       "${CMAKE_CURRENT_SOURCE_DIR}/Config"
+       "$<TARGET_FILE_DIR:${PROJECT_NAME}>/Engine/Config"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "$<TARGET_FILE_DIR:SDL3::SDL3>/SDL3.dll"
+        "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/"            
 )
